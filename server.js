@@ -51,6 +51,7 @@ app.get("/", function (req, res) {
     }
     // Or send the doc to the browser as a json object
     else {
+      // TODO: change to handlebars rendering. Include something, based on object property "saved", to indicate whether article is saved.
       res.json(doc);
     }
   });
@@ -75,7 +76,6 @@ app.get("/scrape", function (req, res) {
       result.summary = $(element).find("div.p").text().trim();
       // Using regex, trim the parentheses from the name of the story's source
       // result.source = $(element).find("a.story-sourcelnk").text().replace(/\(|\)/g, "");
-      console.log("result:", result);
       // Mongoose model powers activate! Form of: Article!
       var entry = new Article(result);
       // save to db
@@ -92,6 +92,83 @@ app.get("/scrape", function (req, res) {
     });
     // redirect to render with new results
     res.redirect("/");
+  });
+});
+
+// Render "Saved" list
+app.get("/saved", function(req, res) {
+  Article.find({"saved": true})
+  .populate("comment")
+  .exec(function(err, doc) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log(doc);
+      // TODO: change to handlebars rendering
+      res.send(doc);
+    }
+  });
+});
+
+// // GET individual article
+// app.get("/articles/:id", function(req, res) {
+//   // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
+//   Article.findOne({ "_id": req.params.id })
+//   // ..and populate all of the articles associated with it
+//   .populate("comment")
+//   // now, execute our query
+//   .exec(function(error, doc) {
+//     // Log any errors
+//     if (error) {
+//       console.log(error);
+//     }
+//     // Otherwise, send the doc to the browser as a json object
+//     else {
+//       res.json(doc);
+//     }
+//   });
+// });
+
+// Add an article to "saved" list
+app.post("/:id", function(req, res) {
+  // grab specific article from the db, then either add it to or remove it from the "saved" list based on the Boolean passed
+  Article.findOneAndUpdate({"_id": req.params.id}, {"saved": req.body.saved})
+  .exec(function(err, doc) {
+    if (err) {
+      console.log(err);
+    } else {
+      res.send(doc);
+    }
+  })
+});
+
+// Create a new comment or replace an existing comment
+app.post("/saved/:id", function(req, res) {
+  // Create a new comment and pass the req.body to the entry
+  var newComment = new Comment(req.body);
+  // And save the new comment the db
+  newComment.save(function(error, doc) {
+    // Log any errors
+    if (error) {
+      console.log(error);
+    }
+    // Otherwise
+    else {
+      // Use the article id to find and update its comment
+      Article.findOneAndUpdate({ "_id": req.params.id }, { "comment": doc._id })
+      // Execute the above query
+      .exec(function(err, doc) {
+        // Log any errors
+        if (err) {
+          console.log(err);
+        }
+        else {
+          // Or send the document to the browser
+          // res.redirect("/saved") maybe?
+          res.send(doc);
+        }
+      });
+    }
   });
 });
 
