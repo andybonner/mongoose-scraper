@@ -18,9 +18,9 @@ var ArticleSchema = new Schema({
   summary: {
     type: String
   },
-  source: {
-    type: String
-  },
+  // source: {
+  //   type: String
+  // },
   saved: {
     type: Boolean,
     default: false

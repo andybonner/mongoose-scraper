@@ -31,20 +31,20 @@ mongoose.connect("mongodb://localhost/slashdot-scraper");
 var db = mongoose.connection;
 
 // Show any mongoose errors
-db.on("error", function(error) {
+db.on("error", function (error) {
   console.log("Mongoose Error: ", error);
 });
 
 // Once logged in to the db through mongoose, log a success message
-db.once("open", function() {
+db.once("open", function () {
   console.log("Mongoose connection successful.");
 });
 
 // ROUTES
 // Default Home view
-app.get("/", function(req, res) {
+app.get("/", function (req, res) {
   // fetch articles from db
-  Article.find({}, function(error, doc) {
+  Article.find({}, function (error, doc) {
     // Log any errors
     if (error) {
       console.log("Error retrieving from db:", error);
@@ -57,29 +57,29 @@ app.get("/", function(req, res) {
 })
 
 // Scrape
-app.get("/scrape", function(req, res) {
+app.get("/scrape", function (req, res) {
   // Point request current page at SlashDot
-  request("https://slashdot.org/", function(error, response, html) {
+  request("https://slashdot.org/", function (error, response, html) {
     if (error) {
       console.log("Request error:", error);
     }
     // Hand it to cheerio and assign to "$"
     var $ = cheerio.load(html);
     // To avoid sponsored advertisement articles, select only articles with ids
-    // TODO: change back to article[id]
-    $("article").each(function(i, element) {
+    $("article[id]").each(function (i, element) {
       var result = {};
       // Harvest the relevant portions of every article
-      result.title = $(this).find("h2 span a").text();
-      result.link = $(this).find("h2 span a").attr("href");
-      result.summary = $(this).find("div").text();
+      // Drop the read count after the title
+      result.title = $(element).find("h2 span a").text().split(")")[0];
+      result.link = $(element).find("h2 span a").attr("href");
+      result.summary = $(element).find("div.p").text().trim();
       // Using regex, trim the parentheses from the name of the story's source
-      result.source = $(this).find("a.story-sourcelnk").text().replace(/\(|\)/g, "");
+      // result.source = $(element).find("a.story-sourcelnk").text().replace(/\(|\)/g, "");
       console.log("result:", result);
       // Mongoose model powers activate! Form of: Article!
       var entry = new Article(result);
       // save to db
-      entry.save(function(err, doc) {
+      entry.save(function (err, doc) {
         // Log any errors
         if (err) {
           console.log("Saving error:", err);
@@ -89,14 +89,13 @@ app.get("/scrape", function(req, res) {
           console.log("Scrape results:", doc);
         }
       });
-
     });
+    // redirect to render with new results
+    res.redirect("/");
   });
-  // redirect to render with new results
-  res.redirect("/");
 });
 
 var PORT = 3000;
-app.listen(3000, function() {
+app.listen(3000, function () {
   console.log("App running on port", PORT);
 });
