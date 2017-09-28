@@ -15,13 +15,21 @@ var ArticleSchema = new Schema({
     type: String,
     required: true
   },
+  summary: {
+    type: String
+  },
+  source: {
+    type: String
+  },
+  saved: {
+    type: Boolean,
+    default: false
+  },
   // This only saves one comment's ObjectId, ref refers to the Comment model
   comment: {
     type: Schema.Types.ObjectId,
     ref: "Comment"
   }
-  // TODO: But we need multiple comments per article. Does this work for that?
-  // Hey, is this all I need? look up "populate"
 });
 
 // Create the Article model with the ArticleSchema
