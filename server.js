@@ -60,8 +60,10 @@ app.get("/", function (req, res) {
     }
     // Or send the doc to the browser as a json object
     else {
-      // TODO: change to handlebars rendering. Include something, based on object property "saved", to indicate whether article is saved.
-      res.json(doc);
+      var hbObject = {
+        articles: doc
+      }     
+      res.render('index', hbObject);
     }
   });
 })
@@ -80,7 +82,7 @@ app.get("/scrape", function (req, res) {
       var result = {};
       // Harvest the relevant portions of every article
       // Drop the read count after the title
-      result.title = $(element).find("h2 span a").text().split(")")[0];
+      result.title = $(element).find("h2 span a").text().split(")")[0] + ")";
       result.link = $(element).find("h2 span a").attr("href");
       result.summary = $(element).find("div.p").text().trim();
       // Using regex, trim the parentheses from the name of the story's source
@@ -91,11 +93,11 @@ app.get("/scrape", function (req, res) {
       entry.save(function (err, doc) {
         // Log any errors
         if (err) {
-          console.log("Saving error:", err);
+          // console.log("Saving error:", err);
         }
         // Or log the doc
         else {
-          console.log("Scrape results:", doc);
+          // console.log("Scrape results:", doc);
         }
       });
     });
@@ -113,8 +115,11 @@ app.get("/saved", function(req, res) {
       console.log(err);
     } else {
       console.log(doc);
-      // TODO: change to handlebars rendering
-      res.send(doc);
+      var hbObject = {
+        articles: doc
+      }
+      console.log('hbObject:', hbObject);
+      res.render('saved', hbObject);
     }
   });
 });

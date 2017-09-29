@@ -1,0 +1,17 @@
+<div class="container">
+  {{#each articles}}
+  <div class="card blue-grey darken-1">
+    <div class="card-content white-text">
+      <span class="card-title orange-text">
+        <a href="{{this.link}}" target="_blank">{{this.title}}</a>
+      </span>
+      <p>{{this.summary}}</p>
+    </div>
+    <div class="card-action deep-orange-text text-accent-3">
+      {{#if this.saved}}
+      <a href="#" class="btn disabled orange accent-2 blue-grey-text text-darken-3">article saved</a> {{else}}
+      <a href="/{{this._id}}" class="btn orange accent-2 blue-grey-text text-darken-3">save article</a> {{/if}}
+    </div>
+  </div>
+  {{/each}}
+</div>
