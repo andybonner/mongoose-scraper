@@ -88,6 +88,7 @@ app.get("/scrape", function (req, res) {
       result.link = $(element).find("h2 span a").attr("href");
       result.summary = $(element).find("div.p").text().trim();
       // Mongoose model powers activate! Form of: Article!
+      // To avoid adding duplicate entries, the "update" method creates a new document only if no matching title is found.
       Article.update({title: result.title}, result, {new: true, upsert: true, setDefaultsOnInsert: true}, function(err, doc) {
 
       // var entry = new Article(result);
