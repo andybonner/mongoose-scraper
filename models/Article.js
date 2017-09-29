@@ -25,6 +25,10 @@ var ArticleSchema = new Schema({
     type: Boolean,
     default: false
   },
+  dateCreated: {
+    type: Date,
+    default: Date.now
+  },
   // This only saves one comment's ObjectId, ref refers to the Comment model
   comment: {
     type: Schema.Types.ObjectId,

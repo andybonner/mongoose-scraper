@@ -9,8 +9,13 @@
     </div>
     <div class="card-action deep-orange-text text-accent-3">
       {{#if this.saved}}
-      <a href="#" class="btn disabled orange accent-2 blue-grey-text text-darken-3">article saved</a> {{else}}
-      <a href="/{{this._id}}" class="btn orange accent-2 blue-grey-text text-darken-3">save article</a> {{/if}}
+      <a href="#" class="btn disabled orange accent-2 blue-grey-text text-darken-3">article saved</a> 
+      {{else}}
+      <form method="POST" action="/{{this._id}}">
+        <input type="hidden" name="saved" value="true">
+        <button type="submit" class="btn orange accent-2 blue-grey-text text-darken-3">save article</button>
+      </form>
+      {{/if}}
     </div>
   </div>
   {{/each}}

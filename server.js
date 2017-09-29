@@ -53,20 +53,22 @@ db.once("open", function () {
 // Default Home view
 app.get("/", function (req, res) {
   // fetch articles from db
-  Article.find({}, function (error, doc) {
+  Article.find({})
+  .sort({ dateCreated: 1 })
+  .exec(function (error, doc) {
     // Log any errors
     if (error) {
       console.log("Error retrieving from db:", error);
     }
-    // Or send the doc to the browser as a json object
     else {
+      // wrap the response for handlebars' benefit
       var hbObject = {
         articles: doc
-      }     
+      }
       res.render('index', hbObject);
     }
   });
-})
+});
 
 // Scrape
 app.get("/scrape", function (req, res) {
@@ -85,20 +87,20 @@ app.get("/scrape", function (req, res) {
       result.title = $(element).find("h2 span a").text().split(")")[0] + ")";
       result.link = $(element).find("h2 span a").attr("href");
       result.summary = $(element).find("div.p").text().trim();
-      // Using regex, trim the parentheses from the name of the story's source
-      // result.source = $(element).find("a.story-sourcelnk").text().replace(/\(|\)/g, "");
       // Mongoose model powers activate! Form of: Article!
-      var entry = new Article(result);
+      Article.update({title: result.title}, result, {new: true, upsert: true, setDefaultsOnInsert: true}, function(err, doc) {
+
+      // var entry = new Article(result);
       // save to db
-      entry.save(function (err, doc) {
-        // Log any errors
-        if (err) {
-          // console.log("Saving error:", err);
-        }
-        // Or log the doc
-        else {
-          // console.log("Scrape results:", doc);
-        }
+      // entry.save(function (err, doc) {
+      //   // Log any errors
+      //   if (err) {
+      //     // console.log("Saving error:", err);
+      //   }
+      //   // Or log the doc
+      //   else {
+      //     // console.log("Scrape results:", doc);
+      //   }
       });
     });
     // redirect to render with new results
@@ -107,21 +109,21 @@ app.get("/scrape", function (req, res) {
 });
 
 // Render "Saved" list
-app.get("/saved", function(req, res) {
-  Article.find({"saved": true})
-  .populate("comment")
-  .exec(function(err, doc) {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log(doc);
-      var hbObject = {
-        articles: doc
+app.get("/saved", function (req, res) {
+  Article.find({ "saved": true })
+    .populate("comment")
+    .exec(function (err, doc) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log(doc);
+        var hbObject = {
+          articles: doc
+        }
+        console.log('hbObject:', hbObject);
+        res.render('saved', hbObject);
       }
-      console.log('hbObject:', hbObject);
-      res.render('saved', hbObject);
-    }
-  });
+    });
 });
 
 // // GET individual article
@@ -144,24 +146,25 @@ app.get("/saved", function(req, res) {
 // });
 
 // Add an article to "saved" list
-app.post("/:id", function(req, res) {
+app.post("/:id", function (req, res) {
   // grab specific article from the db, then either add it to or remove it from the "saved" list based on the Boolean passed
-  Article.findOneAndUpdate({"_id": req.params.id}, {"saved": req.body.saved})
-  .exec(function(err, doc) {
-    if (err) {
-      console.log(err);
-    } else {
-      res.send(doc);
-    }
-  })
+  Article.findOneAndUpdate({ "_id": req.params.id }, { "saved": req.body.saved })
+    .exec(function (err, doc) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log('doc', doc)
+        res.redirect('/');
+      }
+    })
 });
 
 // Create a new comment or replace an existing comment
-app.post("/saved/:id", function(req, res) {
+app.post("/saved/:id", function (req, res) {
   // Create a new comment and pass the req.body to the entry
   var newComment = new Comment(req.body);
   // And save the new comment the db
-  newComment.save(function(error, doc) {
+  newComment.save(function (error, doc) {
     // Log any errors
     if (error) {
       console.log(error);
@@ -170,18 +173,18 @@ app.post("/saved/:id", function(req, res) {
     else {
       // Use the article id to find and update its comment
       Article.findOneAndUpdate({ "_id": req.params.id }, { "comment": doc._id })
-      // Execute the above query
-      .exec(function(err, doc) {
-        // Log any errors
-        if (err) {
-          console.log(err);
-        }
-        else {
-          // Or send the document to the browser
-          // res.redirect("/saved") maybe?
-          res.send(doc);
-        }
-      });
+        // Execute the above query
+        .exec(function (err, doc) {
+          // Log any errors
+          if (err) {
+            console.log(err);
+          }
+          else {
+            // Or send the document to the browser
+            // res.redirect("/saved") maybe?
+            res.send(doc);
+          }
+        });
     }
   });
 });
