@@ -36,7 +36,7 @@ app.engine("hbs", exphbs({
 app.set("view engine", ".hbs");
 
 // Database configuration with mongoose
-mongoose.connect("mongodb://heroku_grcx8zcf:3pk197of9pgfc3arq2qtcc0ecb@ds149874.mlab.com:49874/heroku_grcx8zcf");
+mongoose.connect("mongodb://localhost/slashdot-scraper");
 var db = mongoose.connection;
 
 // Show any mongoose errors
@@ -126,7 +126,8 @@ app.post("/:id", function (req, res) {
 // Render "Saved" list
 app.get("/saved", function (req, res) {
   Article.find({ "saved": true })
-    .populate("comment")
+    .populate("comments")
+    .sort({dateCreated: 1})
     .exec(function (err, doc) {
       if (err) {
         console.log(err);
@@ -153,9 +154,8 @@ app.post("/saved/:id", function (req, res) {
     }
     // Otherwise
     else {
-
-      // Use the article id to find and update its comment
-      Article.findOneAndUpdate({ "_id": req.params.id }, { "comment": doc._id })
+      // Use the article id to find and update its comments
+      Article.findOneAndUpdate({ "_id": req.params.id }, {$push: { "comments": doc._id }}, {new: true})
         // Execute the above query
         .exec(function (err, doc) {
           // Log any errors
@@ -163,9 +163,7 @@ app.post("/saved/:id", function (req, res) {
             console.log(err);
           }
           else {
-            // Or send the document to the browser
-            // res.redirect("/saved") maybe?
-            res.send(doc);
+            res.redirect('/saved');
           }
         });
     }

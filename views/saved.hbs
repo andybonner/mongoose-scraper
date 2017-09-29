@@ -18,7 +18,7 @@
     </div>
     <div class="card-action deep-orange-text text-accent-3">
       {{#if this.comments}}
-      <a href="#" class="btn orange accent-2 blue-grey-text text-darken-3">{{this.comments.length}} Comments</a> 
+      <a href="#modal{{this._id}}" class="btn modal-trigger orange accent-2 blue-grey-text text-darken-3">{{this.comments.length}} Comments</a> 
       {{else}}
       <a href="#modal{{this._id}}" class="btn modal-trigger orange accent-2 blue-grey-text text-darken-3">Comment</a>
       {{/if}}
@@ -30,12 +30,16 @@
     <a class="modal-close right"><i class="material-icons">close</i></a>
     <div class="modal-content">
       <h4>Comments:</h4>
-      <ul class="collection">
-        {{#each this.comments}}
-        <li>{{this}}</li>
-        {{/each}}
-      </ul>
-      <form action="POST" action="/saved/{{this._id}}">
+      {{#if this.comments.length}}
+        <ul class="collection">
+          {{#each this.comments}}
+          <li class="collection-item">{{this.body}}</li>
+          {{/each}}
+        </ul>
+      {{else}}
+        <p>No comments yet! Leave the first one below.</p>
+      {{/if}}
+      <form method="POST" action="/saved/{{this._id}}">
         <div class="input-field">
           <textarea name="body" id="commentfield" class="materialize-textarea"></textarea>
           <label for="commentfield">Your comment</label>
