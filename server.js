@@ -54,20 +54,20 @@ db.once("open", function () {
 app.get("/", function (req, res) {
   // fetch articles from db
   Article.find({})
-  .sort({ dateCreated: 1 })
-  .exec(function (error, doc) {
-    // Log any errors
-    if (error) {
-      console.log("Error retrieving from db:", error);
-    }
-    else {
-      // wrap the response for handlebars' benefit
-      var hbObject = {
-        articles: doc
+    .sort({ dateCreated: 1 })
+    .exec(function (error, doc) {
+      // Log any errors
+      if (error) {
+        console.log("Error retrieving from db:", error);
       }
-      res.render('index', hbObject);
-    }
-  });
+      else {
+        // wrap the response for handlebars' benefit
+        var hbObject = {
+          articles: doc
+        }
+        res.render('index', hbObject);
+      }
+    });
 });
 
 // Scrape
@@ -89,24 +89,38 @@ app.get("/scrape", function (req, res) {
       result.summary = $(element).find("div.p").text().trim();
       // Mongoose model powers activate! Form of: Article!
       // To avoid adding duplicate entries, the "update" method creates a new document only if no matching title is found.
-      Article.update({title: result.title}, result, {new: true, upsert: true, setDefaultsOnInsert: true}, function(err, doc) {
+      Article.update({ title: result.title }, result, { new: true, upsert: true, setDefaultsOnInsert: true }, function (err, doc) {
 
-      // var entry = new Article(result);
-      // save to db
-      // entry.save(function (err, doc) {
-      //   // Log any errors
-      //   if (err) {
-      //     // console.log("Saving error:", err);
-      //   }
-      //   // Or log the doc
-      //   else {
-      //     // console.log("Scrape results:", doc);
-      //   }
+        // var entry = new Article(result);
+        // save to db
+        // entry.save(function (err, doc) {
+        //   // Log any errors
+        //   if (err) {
+        //     // console.log("Saving error:", err);
+        //   }
+        //   // Or log the doc
+        //   else {
+        //     // console.log("Scrape results:", doc);
+        //   }
       });
     });
     // redirect to render with new results
     res.redirect("/");
   });
+});
+
+// Add an article to "saved" list
+app.post("/:id", function (req, res) {
+  // grab specific article from the db, then either add it to or remove it from the "saved" list based on the Boolean passed
+  Article.findOneAndUpdate({ "_id": req.params.id }, { "saved": req.body.saved })
+    .exec(function (err, doc) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log('doc', doc)
+        res.redirect('/');
+      }
+    })
 });
 
 // Render "Saved" list
@@ -127,39 +141,6 @@ app.get("/saved", function (req, res) {
     });
 });
 
-// // GET individual article
-// app.get("/articles/:id", function(req, res) {
-//   // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
-//   Article.findOne({ "_id": req.params.id })
-//   // ..and populate all of the articles associated with it
-//   .populate("comment")
-//   // now, execute our query
-//   .exec(function(error, doc) {
-//     // Log any errors
-//     if (error) {
-//       console.log(error);
-//     }
-//     // Otherwise, send the doc to the browser as a json object
-//     else {
-//       res.json(doc);
-//     }
-//   });
-// });
-
-// Add an article to "saved" list
-app.post("/:id", function (req, res) {
-  // grab specific article from the db, then either add it to or remove it from the "saved" list based on the Boolean passed
-  Article.findOneAndUpdate({ "_id": req.params.id }, { "saved": req.body.saved })
-    .exec(function (err, doc) {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log('doc', doc)
-        res.redirect('/');
-      }
-    })
-});
-
 // Create a new comment or replace an existing comment
 app.post("/saved/:id", function (req, res) {
   // Create a new comment and pass the req.body to the entry
@@ -172,6 +153,7 @@ app.post("/saved/:id", function (req, res) {
     }
     // Otherwise
     else {
+      
       // Use the article id to find and update its comment
       Article.findOneAndUpdate({ "_id": req.params.id }, { "comment": doc._id })
         // Execute the above query
