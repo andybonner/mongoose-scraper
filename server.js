@@ -36,7 +36,7 @@ app.engine("hbs", exphbs({
 app.set("view engine", ".hbs");
 
 // Database configuration with mongoose
-mongoose.connect("mongodb://localhost/slashdot-scraper");
+mongoose.connect("mongodb://heroku_grcx8zcf:3pk197of9pgfc3arq2qtcc0ecb@ds149874.mlab.com:49874/heroku_grcx8zcf");
 var db = mongoose.connection;
 
 // Show any mongoose errors
@@ -153,7 +153,7 @@ app.post("/saved/:id", function (req, res) {
     }
     // Otherwise
     else {
-      
+
       // Use the article id to find and update its comment
       Article.findOneAndUpdate({ "_id": req.params.id }, { "comment": doc._id })
         // Execute the above query
@@ -172,7 +172,7 @@ app.post("/saved/:id", function (req, res) {
   });
 });
 
-var PORT = 3000;
-app.listen(3000, function () {
+var PORT = process.env.PORT || 3000;
+app.listen(PORT, function () {
   console.log("App running on port", PORT);
 });
