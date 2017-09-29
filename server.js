@@ -110,7 +110,7 @@ app.get("/scrape", function (req, res) {
 });
 
 // Add an article to, or remove from, "saved" list
-app.post("/:route/:id", function (req, res) {
+app.post("/save/:route/:id", function (req, res) {
   // to allow redirecting to multiple routes, take req.param.route
   // but to redirect to '/', we'll have to pass something in and then convert to ''
   if (req.params.route === "index") {
@@ -148,7 +148,7 @@ app.get("/saved", function (req, res) {
 });
 
 // Create a new comment or replace an existing comment
-app.post("/saved/:id", function (req, res) {
+app.post("/comment/:id", function (req, res) {
   // Create a new comment and pass the req.body to the entry
   var newComment = new Comment(req.body);
   // And save the new comment the db

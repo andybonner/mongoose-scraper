@@ -19,7 +19,7 @@
         <p>{{this.summary}}</p>
       </div>
       <div class="card-action deep-orange-text text-accent-3">
-        <form method="POST" action="/saved/{{this._id}}">
+        <form method="POST" action="/save/saved/{{this._id}}">
           {{#if this.comments}}
           <a href="#modal{{this._id}}" class="btn modal-trigger orange accent-2 blue-grey-text text-darken-3">{{this.comments.length}} Comments</a>
           {{else}}
@@ -44,7 +44,7 @@
         {{else}}
         <p>No comments yet! Leave the first one below.</p>
         {{/if}}
-        <form method="POST" action="/saved/{{this._id}}">
+        <form method="POST" action="/comment/{{this._id}}">
           <div class="input-field">
             <textarea name="body" id="commentfield" class="materialize-textarea"></textarea>
             <label for="commentfield">Your comment</label>
