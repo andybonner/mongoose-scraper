@@ -84,8 +84,8 @@ app.get("/scrape", function (req, res) {
       var result = {};
       // Harvest the relevant portions of every article
       // Drop the read count after the title
-      result.title = $(element).find("h2 span a").text().split(")")[0] + ")";
-      result.link = $(element).find("h2 span a").attr("href");
+      result.title = $(element).find("h2 span.story-title a").text();      
+      result.link = $(element).find("h2 span.story-title a").attr("href");
       result.summary = $(element).find("div.p").text().trim();
       // Mongoose model powers activate! Form of: Article!
       // To avoid adding duplicate entries, the "update" method creates a new document only if no matching title is found.

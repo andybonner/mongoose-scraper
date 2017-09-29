@@ -2,30 +2,38 @@
     <div class="nav-wrapper orange lighten-2">
       <a href="#" class="brand-logo left blue-grey-text">Scrapedot</a>
       <ul id="nav-mobile" class="right">
+        <li><a href="/scrape" class="deep-orange accent-2 blue-grey-text text-darken-3 waves-effect waves-light btn">Re-scrape</a></li>
         <li><a href="/saved" class="blue-grey-text">Saved articles</a></li>
       </ul>
     </div>
   </nav>
 
 <div class="container">
-  {{#each articles}}
-  <div class="card blue-grey darken-1">
-    <div class="card-content white-text">
-      <span class="card-title orange-text">
-        <a href="{{this.link}}" target="_blank">{{this.title}}</a>
-      </span>
-      <p>{{this.summary}}</p>
+  {{#if articles}}
+    {{#each articles}}
+    <div class="card blue-grey darken-1">
+      <div class="card-content white-text">
+        <span class="card-title orange-text">
+          <a href="{{this.link}}" target="_blank">{{this.title}}</a>
+        </span>
+        <p>{{this.summary}}</p>
+      </div>
+      <div class="card-action deep-orange-text text-accent-3">
+        {{#if this.saved}}
+        <a href="#" class="btn disabled orange accent-2 blue-grey-text text-darken-3">article saved</a> 
+        {{else}}
+        <form method="POST" action="/index/{{this._id}}">
+          <input type="hidden" name="saved" value="true">
+          <button type="submit" class="btn orange accent-2 blue-grey-text text-darken-3">save article</button>
+        </form>
+        {{/if}}
+      </div>
     </div>
-    <div class="card-action deep-orange-text text-accent-3">
-      {{#if this.saved}}
-      <a href="#" class="btn disabled orange accent-2 blue-grey-text text-darken-3">article saved</a> 
-      {{else}}
-      <form method="POST" action="/index/{{this._id}}">
-        <input type="hidden" name="saved" value="true">
-        <button type="submit" class="btn orange accent-2 blue-grey-text text-darken-3">save article</button>
-      </form>
-      {{/if}}
+    {{/each}}
+  {{else}}
+    <div class="card-panel blue-grey darken-3 white-text">
+      <h2>Nothing to see here!</h2>
+      <p>There's no Slashdot news here yet. Go ahead and <a href="/scrape" class="deep-orange accent-2 blue-grey-text text-darken-3 waves-effect waves-light btn">scrape</a> some!</p>
     </div>
-  </div>
-  {{/each}}
+  {{/if}}
 </div>
