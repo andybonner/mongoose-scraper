@@ -26,6 +26,15 @@ app.use(bodyParser.urlencoded({
 // Make public a static dir
 app.use(express.static("public"));
 
+// Set Handlebars
+var exphbs = require("express-handlebars");
+app.set('views', './views')
+app.engine("hbs", exphbs({
+  defaultLayout: "main",
+  extname: '.hbs'
+}));
+app.set("view engine", ".hbs");
+
 // Database configuration with mongoose
 mongoose.connect("mongodb://localhost/slashdot-scraper");
 var db = mongoose.connection;
