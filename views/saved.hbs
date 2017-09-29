@@ -1,11 +1,11 @@
-  <nav>
-    <div class="nav-wrapper orange lighten-2">
-      <a href="#" class="brand-logo left blue-grey-text">Scrapedot</a>
-      <ul id="nav-mobile" class="right">
-        <li><a href="/" class="blue-grey-text">Home</a></li>
-      </ul>
-    </div>
-  </nav>
+<nav>
+  <div class="nav-wrapper orange lighten-2">
+    <a href="#" class="brand-logo left blue-grey-text">Scrapedot</a>
+    <ul id="nav-mobile" class="right">
+      <li><a href="/" class="blue-grey-text">Home</a></li>
+    </ul>
+  </div>
+</nav>
 
 <div class="container">
   {{#each articles}}
@@ -17,14 +17,14 @@
       <p>{{this.summary}}</p>
     </div>
     <div class="card-action deep-orange-text text-accent-3">
-      {{#if this.comments}}
-      <a href="#modal{{this._id}}" class="btn modal-trigger orange accent-2 blue-grey-text text-darken-3">{{this.comments.length}} Comments</a> 
-      {{else}}
-      <a href="#modal{{this._id}}" class="btn modal-trigger orange accent-2 blue-grey-text text-darken-3">Comment</a>
-      {{/if}}
-      <form method="POST" action="/{{this._id}}">
+      <form method="POST" action="/saved/{{this._id}}">
+        {{#if this.comments}}
+        <a href="#modal{{this._id}}" class="btn modal-trigger orange accent-2 blue-grey-text text-darken-3">{{this.comments.length}} Comments</a>
+        {{else}}
+        <a href="#modal{{this._id}}" class="btn modal-trigger orange accent-2 blue-grey-text text-darken-3">Comment</a>
+        {{/if}}
         <input type="hidden" name="saved" value="false">
-        <a href="#" class="btn deep-orange accent-2 blue-grey-text text-darken-3">Unsave article</a>
+        <button type="submit" class="btn deep-orange accent-2 blue-grey-text text-darken-3">Unsave article</button>
       </form>
     </div>
   </div>
@@ -34,13 +34,13 @@
     <div class="modal-content">
       <h4>Comments:</h4>
       {{#if this.comments.length}}
-        <ul class="collection">
-          {{#each this.comments}}
-          <li class="collection-item">{{this.body}}</li>
-          {{/each}}
-        </ul>
+      <ul class="collection">
+        {{#each this.comments}}
+        <li class="collection-item">{{this.body}}</li>
+        {{/each}}
+      </ul>
       {{else}}
-        <p>No comments yet! Leave the first one below.</p>
+      <p>No comments yet! Leave the first one below.</p>
       {{/if}}
       <form method="POST" action="/saved/{{this._id}}">
         <div class="input-field">

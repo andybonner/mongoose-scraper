@@ -20,7 +20,7 @@
       {{#if this.saved}}
       <a href="#" class="btn disabled orange accent-2 blue-grey-text text-darken-3">article saved</a> 
       {{else}}
-      <form method="POST" action="/{{this._id}}">
+      <form method="POST" action="/index/{{this._id}}">
         <input type="hidden" name="saved" value="true">
         <button type="submit" class="btn orange accent-2 blue-grey-text text-darken-3">save article</button>
       </form>

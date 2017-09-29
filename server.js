@@ -110,7 +110,12 @@ app.get("/scrape", function (req, res) {
 });
 
 // Add an article to, or remove from, "saved" list
-app.post("/:id", function (req, res) {
+app.post("/:route/:id", function (req, res) {
+  // to allow redirecting to multiple routes, take req.param.route
+  // but to redirect to '/', we'll have to pass something in and then convert to ''
+  if (req.params.route === "index") {
+    req.params.route = "";
+  }
   // grab specific article from the db, then either add it to or remove it from the "saved" list based on the Boolean passed
   Article.findOneAndUpdate({ "_id": req.params.id }, { "saved": req.body.saved })
     .exec(function (err, doc) {
@@ -118,7 +123,7 @@ app.post("/:id", function (req, res) {
         console.log(err);
       } else {
         console.log('doc', doc)
-        res.redirect('/');
+        res.redirect('/' + req.params.route);
       }
     })
 });
