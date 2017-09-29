@@ -36,7 +36,7 @@ app.engine("hbs", exphbs({
 app.set("view engine", ".hbs");
 
 // Database configuration with mongoose
-mongoose.connect("mongodb://localhost/slashdot-scraper");
+mongoose.connect("mongodb://heroku_grcx8zcf:3pk197of9pgfc3arq2qtcc0ecb@ds149874.mlab.com:49874/heroku_grcx8zcf");
 var db = mongoose.connection;
 
 // Show any mongoose errors
