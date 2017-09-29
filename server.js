@@ -109,7 +109,7 @@ app.get("/scrape", function (req, res) {
   });
 });
 
-// Add an article to "saved" list
+// Add an article to, or remove from, "saved" list
 app.post("/:id", function (req, res) {
   // grab specific article from the db, then either add it to or remove it from the "saved" list based on the Boolean passed
   Article.findOneAndUpdate({ "_id": req.params.id }, { "saved": req.body.saved })

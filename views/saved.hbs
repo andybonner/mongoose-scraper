@@ -22,7 +22,10 @@
       {{else}}
       <a href="#modal{{this._id}}" class="btn modal-trigger orange accent-2 blue-grey-text text-darken-3">Comment</a>
       {{/if}}
-      <a href="#" class="btn deep-orange accent-2 blue-grey-text text-darken-3">Unsave article</a>
+      <form method="POST" action="/{{this._id}}">
+        <input type="hidden" name="saved" value="false">
+        <a href="#" class="btn deep-orange accent-2 blue-grey-text text-darken-3">Unsave article</a>
+      </form>
     </div>
   </div>
 
