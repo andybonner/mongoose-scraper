@@ -102,6 +102,9 @@ app.get("/scrape", function (req, res) {
         //   else {
         //     // console.log("Scrape results:", doc);
         //   }
+        if (err) {
+          console.log("Error:", err);
+        }
       });
     });
     // redirect to render with new results
